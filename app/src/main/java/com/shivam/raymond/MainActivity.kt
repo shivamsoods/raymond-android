@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupNavigation()
-        setSupportActionBar(mainActivityBinding.toolbarLayout)
 
     }
 

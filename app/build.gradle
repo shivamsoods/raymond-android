@@ -54,5 +54,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
+    //QR Code Scanner
+    implementation 'com.github.yuriy-budiyev:code-scanner:2.1.2'
 
 }

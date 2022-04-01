@@ -18,7 +18,35 @@
 
     <fragment
         android:id="@+id/addFabricImageFragment"
-        android:name="com.shivam.raymond.fragments.AddFabricImageFragment"
+        android:name="com.shivam.raymond.fragments.EnterFabricCodeFragment"
         android:label="Add Fabric Image"
-        tools:layout="@layout/fragment_add_fabric_image" />
+        tools:layout="@layout/fragment_enter_fabric_code" >
+        <action
+            android:id="@+id/action_addFabricImageFragment_to_scanQrCodeFragment"
+            app:destination="@id/scanQrCodeFragment"
+            app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_addFabricImageFragment_to_enterFabricImageFragment"
+            app:destination="@id/enterFabricImageFragment"
+            app:popUpTo="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/scanQrCodeFragment"
+        android:name="com.shivam.raymond.fragments.ScanQrCodeFragment"
+        android:label="Scan QR Code"
+        tools:layout="@layout/fragment_scan_qr_code" >
+        <action
+            android:id="@+id/action_scanQrCodeFragment_to_enterFabricImageFragment"
+            app:destination="@id/enterFabricImageFragment"
+            app:popUpTo="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/enterFabricImageFragment"
+        android:name="com.shivam.raymond.fragments.EnterFabricImageFragment"
+        android:label="Upload Fabric Image"
+        tools:layout="@layout/fragment_enter_fabric_image" >
+        <argument
+            android:name="fabricCode"
+            app:argType="string" />
+    </fragment>
 </navigation>

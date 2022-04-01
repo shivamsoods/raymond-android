@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/main_nav_host_fragment"
+    <fragment
         android:name="androidx.navigation.fragment.NavHostFragment"
+        android:id="@+id/main_nav_host_fragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:defaultNavHost="true"

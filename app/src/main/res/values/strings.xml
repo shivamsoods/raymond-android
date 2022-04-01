@@ -2,4 +2,8 @@
     <string name="app_name">Raymond</string>
     <string name="hello_blank_fragment">Add Fabric Image</string>
     <string name="add_fabric_image">Add Fabric Image</string>
+    <string name="or">-OR-</string>
+    <string name="fabric_code">Fabric Code</string>
+    <string name="scan_qr_code">Scan QR Code</string>
+    <string name="submit">Submit</string>
 </resources>
