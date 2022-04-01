@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Raymond</string>
+    <string name="hello_blank_fragment">Add Fabric Image</string>
+    <string name="add_fabric_image">Add Fabric Image</string>
 </resources>
