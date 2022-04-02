@@ -270,12 +270,12 @@ class AddViewFabricInfoFragment : BaseFragment() {
 
                     val payload = FabricInfoModel(
                         fabricCode = document["fabricCode"].toString(),
-                        fabricLength = document["fabricLength"].toString().toFloat(),
-                        fabricWidth = document["fabricLength"].toString().toFloat(),
-                        imageUrl = document["imageUrl"].toString(),
-                        rackNumber = document["rackNumber"].toString(),
-                        batch = document["batch"].toString(),
-                        fileNumber = document["fileNumber"].toString()
+                        fabricLength = if(document["fabricLength"]==null) 0f else document["fabricLength"].toString().toFloat(),
+                        fabricWidth = if(document["fabricWidth"]==null) 0f else document["fabricWidth"].toString().toFloat(),
+                        imageUrl = if(document["imageUrl"]==null) null else document["imageUrl"].toString(),
+                        rackNumber =if(document["rackNumber"]==null) "" else document["rackNumber"].toString(),
+                        batch = if(document["batch"]==null) "" else document["batch"].toString(),
+                        fileNumber = if(document["fileNumber"]==null) "" else document["fileNumber"].toString()
                     )
                     setUiWithData(payload)
                     fabricDocumentId = document.id
@@ -288,14 +288,19 @@ class AddViewFabricInfoFragment : BaseFragment() {
 
     private fun setUiWithData(fabricInfoItem: FabricInfoModel) {
         addViewFabricInfoBinding.etFabricCode.editText?.setText(fabricInfoItem.fabricCode)
+        addViewFabricInfoBinding.etFabricCodeAgain.editText?.setText(fabricInfoItem.fabricCode)
         addViewFabricInfoBinding.etFabricLength.editText?.setText(fabricInfoItem.fabricLength.toString())
         addViewFabricInfoBinding.etFabricWidth.editText?.setText(fabricInfoItem.fabricWidth.toString())
         addViewFabricInfoBinding.etRackNumber.editText?.setText(fabricInfoItem.rackNumber)
         addViewFabricInfoBinding.etBatch.editText?.setText(fabricInfoItem.batch)
         addViewFabricInfoBinding.etFileNumber.editText?.setText(fabricInfoItem.fileNumber)
-        addViewFabricInfoBinding.ivUploadImage.visibility = View.VISIBLE
-        addViewFabricInfoBinding.ivUploadImage.load(fabricInfoItem.imageUrl)
-        addViewFabricInfoBinding.btnCaptureImage.text = getString(R.string.capture_image_again)
+        if(fabricInfoItem.imageUrl==null){
+            addViewFabricInfoBinding.ivUploadImage.visibility=View.GONE
+        }else{
+            addViewFabricInfoBinding.ivUploadImage.visibility = View.VISIBLE
+            addViewFabricInfoBinding.ivUploadImage.load(fabricInfoItem.imageUrl)
+            addViewFabricInfoBinding.btnCaptureImage.text = getString(R.string.capture_image_again)
+        }
 
     }
 
