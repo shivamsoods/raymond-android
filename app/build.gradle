@@ -57,4 +57,11 @@ dependencies {
     //QR Code Scanner
     implementation 'com.github.yuriy-budiyev:code-scanner:2.1.2'
 
+    //Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    //Coil
+    implementation("io.coil-kt:coil:2.0.0-rc02")
+
+
 }
