@@ -16,4 +16,5 @@
     <string name="fabric_width">Fabric Width</string>
     <string name="batch">Batch</string>
     <string name="file_number">File Number</string>
+    <string name="view_modify_fabric_information">View/Modify Fabric Detail</string>
 </resources>

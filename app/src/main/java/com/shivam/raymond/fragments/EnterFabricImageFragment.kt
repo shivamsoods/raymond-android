@@ -17,6 +17,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.shivam.raymond.R
+import com.shivam.raymond.ScanQrEnum
 import com.shivam.raymond.databinding.FragmentEnterFabricImageBinding
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
@@ -56,7 +57,7 @@ class EnterFabricImageFragment : BaseFragment() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            findNavController().navigate(EnterFabricCodeFragmentDirections.actionAddFabricImageFragmentToScanQrCodeFragment())
+            findNavController().navigate(EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToScanQrCodeFragment(ScanQrEnum.ADD_IMAGE))
         } else {
             Toast.makeText(
                 requireContext(),
@@ -146,7 +147,7 @@ class EnterFabricImageFragment : BaseFragment() {
                     enterFabricImageBinding.btnCaptureImage.visibility = View.VISIBLE
                     val document = it.documents[0]
                     fabricDocumentId = document.id
-                    enterFabricImageBinding.tvFabricInfo.text = "Fabric Code: $fabricCode\nRack: ${document["rack"]}"
+                    enterFabricImageBinding.tvFabricInfo.text = "Fabric Code: $fabricCode\nRack: ${document["rackNumber"]}"
 
                     if (document["imageUrl"] != null) {
                         enterFabricImageBinding.ivUploadImage.load(document["imageUrl"])

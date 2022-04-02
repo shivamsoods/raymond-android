@@ -12,25 +12,32 @@
         android:label="Home"
         tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_homeFragment_to_addFabricImageFragment"
-            app:destination="@id/addFabricImageFragment" />
+            android:id="@+id/action_homeFragment_to_enterFabricCodeFragment"
+            app:destination="@id/enterFabricCodeFragment" />
         <action
             android:id="@+id/action_homeFragment_to_addFabricInfoFragment"
             app:destination="@id/addFabricInfoFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/addFabricImageFragment"
+        android:id="@+id/enterFabricCodeFragment"
         android:name="com.shivam.raymond.fragments.EnterFabricCodeFragment"
-        android:label="Add Fabric Image"
+        android:label="Enter Fabric Code"
         tools:layout="@layout/fragment_enter_fabric_code" >
         <action
-            android:id="@+id/action_addFabricImageFragment_to_scanQrCodeFragment"
+            android:id="@+id/action_enterFabricCodeFragment_to_scanQrCodeFragment"
             app:destination="@id/scanQrCodeFragment"
             app:popUpTo="@id/homeFragment" />
         <action
-            android:id="@+id/action_addFabricImageFragment_to_enterFabricImageFragment"
+            android:id="@+id/action_enterFabricCodeFragment_to_enterFabricImageFragment"
             app:destination="@id/enterFabricImageFragment"
+            app:popUpTo="@id/homeFragment" />
+        <argument
+            android:name="viewType"
+            app:argType="com.shivam.raymond.ScanQrEnum" />
+        <action
+            android:id="@+id/action_enterFabricCodeFragment_to_addFabricInfoFragment"
+            app:destination="@id/addFabricInfoFragment"
             app:popUpTo="@id/homeFragment" />
     </fragment>
     <fragment
@@ -42,6 +49,13 @@
             android:id="@+id/action_scanQrCodeFragment_to_enterFabricImageFragment"
             app:destination="@id/enterFabricImageFragment"
             app:popUpTo="@id/homeFragment" />
+        <action
+            android:id="@+id/action_scanQrCodeFragment_to_addFabricInfoFragment"
+            app:destination="@id/addFabricInfoFragment"
+            app:popUpTo="@id/homeFragment" />
+        <argument
+            android:name="viewType"
+            app:argType="com.shivam.raymond.ScanQrEnum" />
     </fragment>
     <fragment
         android:id="@+id/enterFabricImageFragment"
@@ -54,9 +68,9 @@
     </fragment>
     <fragment
         android:id="@+id/addFabricInfoFragment"
-        android:name="com.shivam.raymond.fragments.AddFabricInfoFragment"
+        android:name="com.shivam.raymond.fragments.AddViewFabricInfoFragment"
         android:label="Add new fabric"
-        tools:layout="@layout/fragment_add_fabric_info" >
+        tools:layout="@layout/fragment_add_view_fabric_info" >
         <argument
             android:name="fabricCode"
             app:argType="string"

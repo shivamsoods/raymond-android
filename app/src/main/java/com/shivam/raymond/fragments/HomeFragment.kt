@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import com.shivam.raymond.ScanQrEnum
 import com.shivam.raymond.databinding.FragmentHomeBinding
 
 
@@ -25,11 +26,15 @@ class HomeFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         homeBinding.btnGotoAddFabricImage.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddFabricImageFragment())
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(ScanQrEnum.ADD_IMAGE))
         }
 
-        homeBinding.btnGotoAddFabricInformation.setOnClickListener {
+        homeBinding.btnGotoAddFabricDetail.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddFabricInfoFragment(null))
+        }
+
+        homeBinding.btnGotoViewModifyFabricDetail.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(ScanQrEnum.VIEW_FABRIC_DETAIL))
         }
     }
 

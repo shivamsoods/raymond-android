@@ -9,13 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.shivam.raymond.ScanQrEnum
 import com.shivam.raymond.databinding.FragmentEnterFabricCodeBinding
 
 
 class EnterFabricCodeFragment : BaseFragment() {
     private lateinit var enterFabricCodeBinding: FragmentEnterFabricCodeBinding
+    private val args: EnterFabricCodeFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,7 +31,11 @@ class EnterFabricCodeFragment : BaseFragment() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            findNavController().navigate(EnterFabricCodeFragmentDirections.actionAddFabricImageFragmentToScanQrCodeFragment())
+            findNavController().navigate(
+                EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToScanQrCodeFragment(
+                    args.viewType
+                )
+            )
         } else {
             Toast.makeText(
                 requireContext(),
@@ -45,7 +51,11 @@ class EnterFabricCodeFragment : BaseFragment() {
         enterFabricCodeBinding.btnGotoScanQrCode.setOnClickListener {
 
             if (hasPermission(Manifest.permission.CAMERA)) {
-                findNavController().navigate(EnterFabricCodeFragmentDirections.actionAddFabricImageFragmentToScanQrCodeFragment())
+                findNavController().navigate(
+                    EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToScanQrCodeFragment(
+                        args.viewType
+                    )
+                )
             } else {
                 permissionLauncher.launch(Manifest.permission.CAMERA)
             }
@@ -74,11 +84,23 @@ class EnterFabricCodeFragment : BaseFragment() {
         })
 
         enterFabricCodeBinding.btnSubmitFabricCode.setOnClickListener {
-            findNavController().navigate(
-                EnterFabricCodeFragmentDirections.actionAddFabricImageFragmentToEnterFabricImageFragment(
-                    enterFabricCodeBinding.etFabricCode.editText?.text.toString()
-                )
-            )
+            when (args.viewType) {
+                ScanQrEnum.ADD_IMAGE -> {
+                    findNavController().navigate(
+                        EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToEnterFabricImageFragment(
+                            enterFabricCodeBinding.etFabricCode.editText?.text.toString()
+                        )
+                    )
+                }
+                ScanQrEnum.VIEW_FABRIC_DETAIL -> {
+                    findNavController().navigate(
+                        EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToAddFabricInfoFragment(
+                            enterFabricCodeBinding.etFabricCode.editText?.text.toString()
+                        )
+                    )
+                }
+            }
+
         }
     }
 

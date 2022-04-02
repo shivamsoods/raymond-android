@@ -24,10 +24,17 @@
             android:textAllCaps="false" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnGotoAddFabricInformation"
+            android:id="@+id/btnGotoAddFabricDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/add_fabric_information"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGotoViewModifyFabricDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/view_modify_fabric_information"
             android:textAllCaps="false" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
