@@ -134,10 +134,10 @@ class AddViewFabricInfoFragment : BaseFragment() {
                                 .addOnSuccessListener {
                                     Toast.makeText(
                                         requireContext(),
-                                        "Data added successfully",
+                                        "Data updated successfully",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    Timber.d("Data added successfully")
+                                    Timber.d("Data updated successfully")
                                     findNavController().navigateUp()
                                 }
                         } else {
@@ -198,6 +198,18 @@ class AddViewFabricInfoFragment : BaseFragment() {
             allCorrect = false
         } else {
             addViewFabricInfoBinding.etFabricCode.error = null
+        }
+
+        if (addViewFabricInfoBinding.etFabricCodeAgain.editText?.text.isNullOrEmpty()) {
+            addViewFabricInfoBinding.etFabricCodeAgain.error = "Enter fabric code"
+            allCorrect = false
+        } else {
+            if (addViewFabricInfoBinding.etFabricCodeAgain.editText?.text.toString()!=addViewFabricInfoBinding.etFabricCode.editText?.text.toString()) {
+                addViewFabricInfoBinding.etFabricCodeAgain.error = "Fabric code doesn't match!"
+                allCorrect = false
+            } else{
+                addViewFabricInfoBinding.etFabricCodeAgain.error = null
+            }
         }
 
         if (addViewFabricInfoBinding.etRackNumber.editText?.text.isNullOrEmpty()) {

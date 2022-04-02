@@ -69,17 +69,36 @@ class EnterFabricCodeFragment : BaseFragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s != null) {
                     if (s.count() >= 3) {
-                        enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.VISIBLE
                         enterFabricCodeBinding.etFabricCode.error = null
-
                     } else {
-                        enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.GONE
                         enterFabricCodeBinding.etFabricCode.error = "Fabric code is more than 3 digits"
                     }
                 }
             }
 
             override fun afterTextChanged(s: Editable?) {
+            }
+        })
+
+        enterFabricCodeBinding.etFabricCodeAgain.editText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s != null) {
+                    if (s.toString()==enterFabricCodeBinding.etFabricCode.editText?.text.toString()) {
+                        enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.VISIBLE
+                        enterFabricCodeBinding.etFabricCodeAgain.error = null
+
+                    } else {
+                        enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.GONE
+                        enterFabricCodeBinding.etFabricCodeAgain.error = "Fabric codes doesn't match"
+                    }
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
             }
         })
 
