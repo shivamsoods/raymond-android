@@ -27,6 +27,10 @@ class HomeFragment : BaseFragment() {
         homeBinding.btnGotoAddFabricImage.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddFabricImageFragment())
         }
+
+        homeBinding.btnGotoAddFabricInformation.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddFabricInfoFragment(null))
+        }
     }
 
 }

@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_homeFragment_to_addFabricImageFragment"
             app:destination="@id/addFabricImageFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_addFabricInfoFragment"
+            app:destination="@id/addFabricInfoFragment" />
     </fragment>
 
     <fragment
@@ -48,5 +51,15 @@
         <argument
             android:name="fabricCode"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/addFabricInfoFragment"
+        android:name="com.shivam.raymond.fragments.AddFabricInfoFragment"
+        android:label="Add new fabric"
+        tools:layout="@layout/fragment_add_fabric_info" >
+        <argument
+            android:name="fabricCode"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
 </navigation>

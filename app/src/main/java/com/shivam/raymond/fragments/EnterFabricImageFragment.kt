@@ -1,5 +1,6 @@
 package com.shivam.raymond.fragments
 
+import android.Manifest
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -24,8 +25,7 @@ import java.io.ByteArrayOutputStream
 class EnterFabricImageFragment : BaseFragment() {
     private lateinit var enterFabricImageBinding: FragmentEnterFabricImageBinding
     private val args: EnterFabricImageFragmentArgs by navArgs()
-    private val db = Firebase.firestore
-    private val storage = Firebase.storage
+
 
     private var fabricDocumentId = ""
     override fun onCreateView(
@@ -42,11 +42,28 @@ class EnterFabricImageFragment : BaseFragment() {
         checkForExistingFabricCode(args.fabricCode)
 
         enterFabricImageBinding.btnCaptureImage.setOnClickListener {
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            cameraCaptureIntent.launch(cameraIntent)
+            if (hasPermission(Manifest.permission.CAMERA)) {
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                cameraCaptureIntent.launch(cameraIntent)
+            } else {
+                permissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+
         }
+    }
 
-
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            findNavController().navigate(EnterFabricCodeFragmentDirections.actionAddFabricImageFragmentToScanQrCodeFragment())
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "Camera permission needed to capture image.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     private var cameraCaptureIntent =
@@ -60,8 +77,8 @@ class EnterFabricImageFragment : BaseFragment() {
 
                 enterFabricImageBinding.btnSaveFabricDetails.visibility = View.VISIBLE
                 enterFabricImageBinding.btnSaveFabricDetails.setOnClickListener {
-                    it.visibility=View.GONE
-                    enterFabricImageBinding.pbImageUploading.visibility=View.VISIBLE
+                    it.visibility = View.GONE
+                    enterFabricImageBinding.pbImageUploading.visibility = View.VISIBLE
                     uploadImageToFirebase(photo, args.fabricCode)
                 }
             } catch (e: Exception) {
@@ -84,8 +101,8 @@ class EnterFabricImageFragment : BaseFragment() {
 
         imageUploadRef.putBytes(data)
             .addOnFailureListener {
-                enterFabricImageBinding.btnSaveFabricDetails.visibility=View.VISIBLE
-                enterFabricImageBinding.pbImageUploading.visibility=View.GONE
+                enterFabricImageBinding.btnSaveFabricDetails.visibility = View.VISIBLE
+                enterFabricImageBinding.pbImageUploading.visibility = View.GONE
                 Toast.makeText(requireContext(), "Error saving data!", Toast.LENGTH_SHORT).show()
                 Timber.e("Error uploading Image")
             }
@@ -94,10 +111,14 @@ class EnterFabricImageFragment : BaseFragment() {
                 imageUploadRef.downloadUrl.addOnSuccessListener {
                     db.collection("fabric")
                         .document(fabricDocumentId)
-                        .update("imageUrl",it.toString())
+                        .update("imageUrl", it.toString())
                         .addOnSuccessListener {
                             Timber.d("Successfully updated image URL")
-                            Toast.makeText(requireContext(), "Data added with success!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                "Data added with success!",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             findNavController().navigateUp()
                         }
                         .addOnFailureListener { Timber.d("Failed to update image URL") }
@@ -122,7 +143,7 @@ class EnterFabricImageFragment : BaseFragment() {
                     findNavController().navigateUp()
                 } else {
                     Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
-                    enterFabricImageBinding.btnCaptureImage.visibility=View.VISIBLE
+                    enterFabricImageBinding.btnCaptureImage.visibility = View.VISIBLE
                     val document = it.documents[0]
                     fabricDocumentId = document.id
                     enterFabricImageBinding.tvFabricInfo.text = "Fabric Code: $fabricCode\nRack: ${document["rack"]}"

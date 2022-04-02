@@ -8,4 +8,12 @@
     <string name="save">Save</string>
     <string name="capture_image">Capture Image</string>
     <string name="capture_image_again">Capture Image Again</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_fabric_information">Add New Fabric</string>
+    <string name="rack_number">Rack Number</string>
+    <string name="fabric_length">Fabric Length</string>
+    <string name="fabric_width">Fabric Width</string>
+    <string name="batch">Batch</string>
+    <string name="file_number">File Number</string>
 </resources>
