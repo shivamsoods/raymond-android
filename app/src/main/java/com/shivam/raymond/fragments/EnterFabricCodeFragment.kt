@@ -94,8 +94,9 @@ class EnterFabricCodeFragment : BaseFragment() {
                 }
                 ScanQrEnum.VIEW_FABRIC_DETAIL -> {
                     findNavController().navigate(
-                        EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToAddFabricInfoFragment(
-                            enterFabricCodeBinding.etFabricCode.editText?.text.toString()
+                        EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToAddViewFabricInfoFragment(
+                            enterFabricCodeBinding.etFabricCode.editText?.text.toString(),
+                            "View/Modify Fabric"
                         )
                     )
                 }

@@ -15,8 +15,8 @@
             android:id="@+id/action_homeFragment_to_enterFabricCodeFragment"
             app:destination="@id/enterFabricCodeFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_addFabricInfoFragment"
-            app:destination="@id/addFabricInfoFragment" />
+            android:id="@+id/action_homeFragment_to_addViewFabricInfoFragment"
+            app:destination="@id/addViewFabricInfoFragment" />
     </fragment>
 
     <fragment
@@ -36,8 +36,8 @@
             android:name="viewType"
             app:argType="com.shivam.raymond.ScanQrEnum" />
         <action
-            android:id="@+id/action_enterFabricCodeFragment_to_addFabricInfoFragment"
-            app:destination="@id/addFabricInfoFragment"
+            android:id="@+id/action_enterFabricCodeFragment_to_addViewFabricInfoFragment"
+            app:destination="@id/addViewFabricInfoFragment"
             app:popUpTo="@id/homeFragment" />
     </fragment>
     <fragment
@@ -50,8 +50,8 @@
             app:destination="@id/enterFabricImageFragment"
             app:popUpTo="@id/homeFragment" />
         <action
-            android:id="@+id/action_scanQrCodeFragment_to_addFabricInfoFragment"
-            app:destination="@id/addFabricInfoFragment"
+            android:id="@+id/action_scanQrCodeFragment_to_addViewFabricInfoFragment"
+            app:destination="@id/addViewFabricInfoFragment"
             app:popUpTo="@id/homeFragment" />
         <argument
             android:name="viewType"
@@ -67,13 +67,17 @@
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/addFabricInfoFragment"
+        android:label="@string/add_view_fabric_label"
+        android:id="@+id/addViewFabricInfoFragment"
         android:name="com.shivam.raymond.fragments.AddViewFabricInfoFragment"
-        android:label="Add new fabric"
         tools:layout="@layout/fragment_add_view_fabric_info" >
         <argument
             android:name="fabricCode"
             app:argType="string"
             app:nullable="true" />
+
+        <argument
+            android:name="label"
+            app:argType="string" />
     </fragment>
 </navigation>

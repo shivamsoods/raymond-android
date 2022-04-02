@@ -51,6 +51,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         addViewFabricInfoBinding.btnCaptureImage.setOnClickListener {
             if (hasPermission(Manifest.permission.CAMERA)) {
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -62,6 +63,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
 
         addViewFabricInfoBinding.btnSaveFabricDetails.setOnClickListener {
             if (args.fabricCode != null) {
+
                 if (validateInputData()) {
                     addViewFabricInfoBinding.btnSaveFabricDetails.visibility = View.GONE
                     addViewFabricInfoBinding.pbImageUploading.visibility = View.VISIBLE

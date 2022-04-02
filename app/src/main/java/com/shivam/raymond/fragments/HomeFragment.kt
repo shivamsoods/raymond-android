@@ -30,7 +30,7 @@ class HomeFragment : BaseFragment() {
         }
 
         homeBinding.btnGotoAddFabricDetail.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddFabricInfoFragment(null))
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddViewFabricInfoFragment(null,"Add New Fabric"))
         }
 
         homeBinding.btnGotoViewModifyFabricDetail.setOnClickListener {

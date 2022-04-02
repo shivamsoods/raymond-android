@@ -40,7 +40,11 @@ class ScanQrCodeFragment : BaseFragment() {
                         )
                     }
                     ScanQrEnum.VIEW_FABRIC_DETAIL -> {
-                        findNavController().navigate(ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToAddFabricInfoFragment(it.text))
+                        findNavController().navigate(
+                            ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToAddViewFabricInfoFragment(
+                                it.text, "View/Modify Fabric"
+                            )
+                        )
 
                     }
                 }

@@ -17,4 +17,5 @@
     <string name="batch">Batch</string>
     <string name="file_number">File Number</string>
     <string name="view_modify_fabric_information">View/Modify Fabric Detail</string>
+    <string name="add_view_fabric_label">{label}</string>
 </resources>
