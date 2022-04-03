@@ -26,8 +26,7 @@
         tools:layout="@layout/fragment_enter_fabric_code" >
         <action
             android:id="@+id/action_enterFabricCodeFragment_to_scanQrCodeFragment"
-            app:destination="@id/scanQrCodeFragment"
-            app:popUpTo="@id/homeFragment" />
+            app:destination="@id/scanQrCodeFragment" />
         <action
             android:id="@+id/action_enterFabricCodeFragment_to_enterFabricImageFragment"
             app:destination="@id/enterFabricImageFragment"

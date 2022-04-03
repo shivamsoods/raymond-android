@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.DecodeCallback
 import com.shivam.raymond.ScanQrEnum
 import com.shivam.raymond.databinding.FragmentScanQrCodeBinding
+import timber.log.Timber
 
 
 class ScanQrCodeFragment : BaseFragment() {
@@ -31,23 +33,7 @@ class ScanQrCodeFragment : BaseFragment() {
         codeScanner = CodeScanner(requireActivity(), scanQrCodeBinding.qrScannerView)
         codeScanner.decodeCallback = DecodeCallback {
             activity?.runOnUiThread {
-                when (args.viewType) {
-                    ScanQrEnum.ADD_IMAGE -> {
-                        findNavController().navigate(
-                            ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToEnterFabricImageFragment(
-                                it.text
-                            )
-                        )
-                    }
-                    ScanQrEnum.VIEW_FABRIC_DETAIL -> {
-                        findNavController().navigate(
-                            ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToAddViewFabricInfoFragment(
-                                it.text, "View/Modify Fabric"
-                            )
-                        )
-
-                    }
-                }
+ checkForExistingFabricCode(it.text)
             }
         }
 
@@ -66,4 +52,47 @@ class ScanQrCodeFragment : BaseFragment() {
         codeScanner.releaseResources()
         super.onPause()
     }
+
+    private fun checkForExistingFabricCode(fabricCode: String) {
+        db.collection("fabric")
+            .whereEqualTo("fabricCode", fabricCode)
+            .limit(1)
+            .get()
+            .addOnSuccessListener {
+                if (it.isEmpty) {
+                    Toast.makeText(
+                        requireContext(),
+                        "No such fabric code",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    findNavController().navigateUp()
+                } else {
+                    Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
+                    when (args.viewType) {
+                        ScanQrEnum.ADD_IMAGE -> {
+                            findNavController().navigate(
+                                ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToEnterFabricImageFragment(
+                                    fabricCode
+                                )
+                            )
+                        }
+                        ScanQrEnum.VIEW_FABRIC_DETAIL -> {
+                            findNavController().navigate(
+                                ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToAddViewFabricInfoFragment(
+                                    fabricCode, "View/Modify Fabric"
+                                )
+                            )
+
+                        }
+                    }
+
+                }
+
+
+            }
+
+            .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }
+
+    }
+
 }

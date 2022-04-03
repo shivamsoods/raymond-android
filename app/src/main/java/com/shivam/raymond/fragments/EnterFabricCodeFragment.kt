@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.shivam.raymond.ScanQrEnum
 import com.shivam.raymond.databinding.FragmentEnterFabricCodeBinding
+import timber.log.Timber
 
 
 class EnterFabricCodeFragment : BaseFragment() {
@@ -86,7 +87,7 @@ class EnterFabricCodeFragment : BaseFragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s != null) {
-                    if (s.toString()==enterFabricCodeBinding.etFabricCode.editText?.text.toString()) {
+                    if (s.toString() == enterFabricCodeBinding.etFabricCode.editText?.text.toString()) {
                         enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.VISIBLE
                         enterFabricCodeBinding.etFabricCodeAgain.error = null
 
@@ -103,26 +104,52 @@ class EnterFabricCodeFragment : BaseFragment() {
         })
 
         enterFabricCodeBinding.btnSubmitFabricCode.setOnClickListener {
-            when (args.viewType) {
-                ScanQrEnum.ADD_IMAGE -> {
-                    findNavController().navigate(
-                        EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToEnterFabricImageFragment(
-                            enterFabricCodeBinding.etFabricCode.editText?.text.toString()
-                        )
-                    )
-                }
-                ScanQrEnum.VIEW_FABRIC_DETAIL -> {
-                    findNavController().navigate(
-                        EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToAddViewFabricInfoFragment(
-                            enterFabricCodeBinding.etFabricCode.editText?.text.toString(),
-                            "View/Modify Fabric"
-                        )
-                    )
-                }
-            }
+            val fabricCode = enterFabricCodeBinding.etFabricCode.editText?.text.toString()
+            checkForExistingFabricCode(fabricCode)
 
         }
     }
 
+    private fun checkForExistingFabricCode(fabricCode: String) {
+        db.collection("fabric")
+            .whereEqualTo("fabricCode", fabricCode)
+            .limit(1)
+            .get()
+            .addOnSuccessListener {
+                if (it.isEmpty) {
+                    Toast.makeText(
+                        requireContext(),
+                        "No such fabric code",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
+                    when (args.viewType) {
+                        ScanQrEnum.ADD_IMAGE -> {
+
+                            findNavController().navigate(
+                                EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToEnterFabricImageFragment(
+                                    fabricCode
+                                )
+                            )
+                        }
+                        ScanQrEnum.VIEW_FABRIC_DETAIL -> {
+                            findNavController().navigate(
+                                EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToAddViewFabricInfoFragment(
+                                    fabricCode,
+                                    "View/Modify Fabric"
+                                )
+                            )
+                        }
+                    }
+
+                }
+
+
+            }
+
+            .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }
+
+    }
 
 }

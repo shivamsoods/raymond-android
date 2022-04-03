@@ -112,8 +112,8 @@ class AddViewFabricInfoFragment : BaseFragment() {
                     imageUploadRef.downloadUrl.addOnSuccessListener { downloadUrl ->
                         val payload = FabricInfoModel(
                             fabricCode = addViewFabricInfoBinding.etFabricCode.editText?.text.toString(),
-                            fabricLength = addViewFabricInfoBinding.etFabricLength.editText?.text.toString().toFloat(),
-                            fabricWidth = addViewFabricInfoBinding.etFabricWidth.editText?.text.toString().toFloat(),
+                            fabricLength = addViewFabricInfoBinding.etFabricLength.editText?.text.toString(),
+                            fabricWidth = addViewFabricInfoBinding.etFabricWidth.editText?.text.toString(),
                             imageUrl = downloadUrl.toString(),
                             rackNumber = addViewFabricInfoBinding.etRackNumber.editText?.text.toString(),
                             batch = addViewFabricInfoBinding.etBatch.editText?.text.toString(),
@@ -265,13 +265,12 @@ class AddViewFabricInfoFragment : BaseFragment() {
                     ).show()
                     findNavController().navigateUp()
                 } else {
-                    Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
                     val document = it.documents[0]
 
                     val payload = FabricInfoModel(
                         fabricCode = document["fabricCode"].toString(),
-                        fabricLength = if(document["fabricLength"]==null) 0f else document["fabricLength"].toString().toFloat(),
-                        fabricWidth = if(document["fabricWidth"]==null) 0f else document["fabricWidth"].toString().toFloat(),
+                        fabricLength = if(document["fabricLength"]==null) "" else document["fabricLength"].toString(),
+                        fabricWidth = if(document["fabricWidth"]==null) "" else document["fabricWidth"].toString(),
                         imageUrl = if(document["imageUrl"]==null) null else document["imageUrl"].toString(),
                         rackNumber =if(document["rackNumber"]==null) "" else document["rackNumber"].toString(),
                         batch = if(document["batch"]==null) "" else document["batch"].toString(),
@@ -289,8 +288,8 @@ class AddViewFabricInfoFragment : BaseFragment() {
     private fun setUiWithData(fabricInfoItem: FabricInfoModel) {
         addViewFabricInfoBinding.etFabricCode.editText?.setText(fabricInfoItem.fabricCode)
         addViewFabricInfoBinding.etFabricCodeAgain.editText?.setText(fabricInfoItem.fabricCode)
-        addViewFabricInfoBinding.etFabricLength.editText?.setText(fabricInfoItem.fabricLength.toString())
-        addViewFabricInfoBinding.etFabricWidth.editText?.setText(fabricInfoItem.fabricWidth.toString())
+        addViewFabricInfoBinding.etFabricLength.editText?.setText(fabricInfoItem.fabricLength)
+        addViewFabricInfoBinding.etFabricWidth.editText?.setText(fabricInfoItem.fabricWidth)
         addViewFabricInfoBinding.etRackNumber.editText?.setText(fabricInfoItem.rackNumber)
         addViewFabricInfoBinding.etBatch.editText?.setText(fabricInfoItem.batch)
         addViewFabricInfoBinding.etFileNumber.editText?.setText(fabricInfoItem.fileNumber)

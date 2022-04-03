@@ -143,7 +143,6 @@ class EnterFabricImageFragment : BaseFragment() {
                     ).show()
                     findNavController().navigateUp()
                 } else {
-                    Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
                     enterFabricImageBinding.btnCaptureImage.visibility = View.VISIBLE
                     val document = it.documents[0]
                     fabricDocumentId = document.id
