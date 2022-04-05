@@ -4,12 +4,15 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/activity_main.xml" value="0.19791666666666666" />
+        <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/fabric_list_item.xml" value="0.25" />
         <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/fragment_add_fabric_image.xml" value="0.2359375" />
         <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/fragment_add_fabric_info.xml" value="0.25" />
         <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/fragment_add_view_fabric_info.xml" value="0.25" />
+        <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/fragment_display_rack_number.xml" value="0.25" />
         <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/fragment_enter_fabric_code.xml" value="0.25" />
         <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/fragment_enter_fabric_image.xml" value="0.25" />
         <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/fragment_home.xml" value="0.25" />
+        <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/fragment_list_fabric.xml" value="0.25" />
         <entry key="..\:/Users/asus/AndroidStudioProjects/Raymond/app/src/main/res/layout/fragment_scan_qr_code.xml" value="0.25" />
       </map>
     </option>

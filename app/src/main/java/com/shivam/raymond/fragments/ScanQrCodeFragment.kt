@@ -56,7 +56,6 @@ class ScanQrCodeFragment : BaseFragment() {
     private fun checkForExistingFabricCode(fabricCode: String) {
         db.collection("fabric")
             .whereEqualTo("fabricCode", fabricCode)
-            .limit(1)
             .get()
             .addOnSuccessListener {
                 if (it.isEmpty) {
@@ -69,21 +68,24 @@ class ScanQrCodeFragment : BaseFragment() {
                 } else {
                     Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
                     when (args.viewType) {
-                        ScanQrEnum.ADD_IMAGE -> {
+                        ScanQrEnum.VIEW_MODIFY_FABRIC_DETAIL -> {
                             findNavController().navigate(
-                                ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToEnterFabricImageFragment(
+                                ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToListFabricFragment(
                                     fabricCode
-                                )
-                            )
-                        }
-                        ScanQrEnum.VIEW_FABRIC_DETAIL -> {
-                            findNavController().navigate(
-                                ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToAddViewFabricInfoFragment(
-                                    fabricCode, "View/Modify Fabric"
+                                ,args.viewType
                                 )
                             )
 
                         }
+                        ScanQrEnum.ADD_IMAGE -> {
+                            findNavController().navigate(
+                                ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToListFabricFragment(
+                                    fabricCode,
+                                    args.viewType
+                                )
+                            )
+                        }
+
                     }
 
                 }

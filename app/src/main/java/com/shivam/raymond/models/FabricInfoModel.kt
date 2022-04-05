@@ -7,6 +7,7 @@ data class FabricInfoModel(
     val imageUrl: String?,
     val rackNumber: String,
     val batch:String,
-    val fileNumber:String
+    val fileNumber:String,
+    val documentId:String?=null
 )
 

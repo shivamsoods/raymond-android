@@ -25,6 +25,8 @@ class HomeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         homeBinding.btnGotoAddFabricImage.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(ScanQrEnum.ADD_IMAGE))
         }
@@ -34,7 +36,7 @@ class HomeFragment : BaseFragment() {
         }
 
         homeBinding.btnGotoViewModifyFabricDetail.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(ScanQrEnum.VIEW_FABRIC_DETAIL))
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(ScanQrEnum.VIEW_MODIFY_FABRIC_DETAIL))
         }
     }
 

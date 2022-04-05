@@ -106,14 +106,12 @@ class EnterFabricCodeFragment : BaseFragment() {
         enterFabricCodeBinding.btnSubmitFabricCode.setOnClickListener {
             val fabricCode = enterFabricCodeBinding.etFabricCode.editText?.text.toString()
             checkForExistingFabricCode(fabricCode)
-
         }
     }
 
     private fun checkForExistingFabricCode(fabricCode: String) {
         db.collection("fabric")
             .whereEqualTo("fabricCode", fabricCode)
-            .limit(1)
             .get()
             .addOnSuccessListener {
                 if (it.isEmpty) {
@@ -125,22 +123,20 @@ class EnterFabricCodeFragment : BaseFragment() {
                 } else {
                     Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
                     when (args.viewType) {
+                        ScanQrEnum.VIEW_MODIFY_FABRIC_DETAIL -> {
+                            findNavController().navigate(
+                                EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToListFabricFragment(fabricCode,args.viewType)
+                            )
+                        }
                         ScanQrEnum.ADD_IMAGE -> {
 
                             findNavController().navigate(
-                                EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToEnterFabricImageFragment(
-                                    fabricCode
+                                EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToListFabricFragment(
+                                    fabricCode,args.viewType
                                 )
                             )
                         }
-                        ScanQrEnum.VIEW_FABRIC_DETAIL -> {
-                            findNavController().navigate(
-                                EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToAddViewFabricInfoFragment(
-                                    fabricCode,
-                                    "View/Modify Fabric"
-                                )
-                            )
-                        }
+
                     }
 
                 }
@@ -148,7 +144,7 @@ class EnterFabricCodeFragment : BaseFragment() {
 
             }
 
-            .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }
+            .addOnFailureListener { Timber.e("Failed to fetch Fabric Code") }
 
     }
 

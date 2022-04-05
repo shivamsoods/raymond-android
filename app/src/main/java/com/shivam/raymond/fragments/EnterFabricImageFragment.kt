@@ -13,9 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import com.shivam.raymond.R
 import com.shivam.raymond.ScanQrEnum
 import com.shivam.raymond.databinding.FragmentEnterFabricImageBinding
@@ -40,7 +37,7 @@ class EnterFabricImageFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        checkForExistingFabricCode(args.fabricCode)
+        checkForExistingFabricCode(args.docId)
 
         enterFabricImageBinding.btnCaptureImage.setOnClickListener {
             if (hasPermission(Manifest.permission.CAMERA)) {
@@ -57,7 +54,11 @@ class EnterFabricImageFragment : BaseFragment() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            findNavController().navigate(EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToScanQrCodeFragment(ScanQrEnum.ADD_IMAGE))
+            findNavController().navigate(
+                EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToScanQrCodeFragment(
+                    ScanQrEnum.ADD_IMAGE
+                )
+            )
         } else {
             Toast.makeText(
                 requireContext(),
@@ -80,7 +81,7 @@ class EnterFabricImageFragment : BaseFragment() {
                 enterFabricImageBinding.btnSaveFabricDetails.setOnClickListener {
                     it.visibility = View.GONE
                     enterFabricImageBinding.pbImageUploading.visibility = View.VISIBLE
-                    uploadImageToFirebase(photo, args.fabricCode)
+                    uploadImageToFirebase(photo, args.docId)
                 }
             } catch (e: Exception) {
                 enterFabricImageBinding.ivUploadImage.visibility = View.GONE
@@ -92,9 +93,9 @@ class EnterFabricImageFragment : BaseFragment() {
         }
 
 
-    private fun uploadImageToFirebase(bitmap: Bitmap, fabricCode: String) {
+    private fun uploadImageToFirebase(bitmap: Bitmap, docId: String) {
         val storageRef = storage.reference
-        val imageUploadRef = storageRef.child("fabric/$fabricCode.jpg")
+        val imageUploadRef = storageRef.child("fabric/$docId.jpg")
 
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
@@ -129,31 +130,22 @@ class EnterFabricImageFragment : BaseFragment() {
     }
 
 
-    private fun checkForExistingFabricCode(fabricCode: String) {
+    private fun checkForExistingFabricCode(docId: String) {
         db.collection("fabric")
-            .whereEqualTo("fabricCode", fabricCode)
-            .limit(1)
+            .document(docId)
             .get()
             .addOnSuccessListener {
-                if (it.isEmpty) {
-                    Toast.makeText(
-                        requireContext(),
-                        "No such fabric code",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    findNavController().navigateUp()
-                } else {
-                    enterFabricImageBinding.btnCaptureImage.visibility = View.VISIBLE
-                    val document = it.documents[0]
-                    fabricDocumentId = document.id
-                    enterFabricImageBinding.tvFabricInfo.text = "Fabric Code: $fabricCode\nRack: ${document["rackNumber"]}"
+                enterFabricImageBinding.btnCaptureImage.visibility = View.VISIBLE
+                val document = it
+                fabricDocumentId = document.id
+                enterFabricImageBinding.tvFabricInfo.text = "Fabric Code: ${it["fabricCode"]}\nRack Number: ${document["rackNumber"]}\nBatch: ${document["batch"]}"
 
-                    if (document["imageUrl"] != null) {
-                        enterFabricImageBinding.ivUploadImage.load(document["imageUrl"])
-                        enterFabricImageBinding.ivUploadImage.visibility = View.VISIBLE
-                        enterFabricImageBinding.btnCaptureImage.text = getString(R.string.capture_image_again)
-                    }
+                if (document["imageUrl"] != null) {
+                    enterFabricImageBinding.ivUploadImage.load(document["imageUrl"])
+                    enterFabricImageBinding.ivUploadImage.visibility = View.VISIBLE
+                    enterFabricImageBinding.btnCaptureImage.text = getString(R.string.capture_image_again)
                 }
+
             }
             .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }
 

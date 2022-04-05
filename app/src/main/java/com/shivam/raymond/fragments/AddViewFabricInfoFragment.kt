@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream
 class AddViewFabricInfoFragment : BaseFragment() {
     private lateinit var addViewFabricInfoBinding: FragmentAddViewFabricInfoBinding
     private val args: AddViewFabricInfoFragmentArgs by navArgs()
-    private var fabricDocumentId = ""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,34 +61,38 @@ class AddViewFabricInfoFragment : BaseFragment() {
         }
 
         addViewFabricInfoBinding.btnSaveFabricDetails.setOnClickListener {
-            if (args.fabricCode != null) {
 
+            if (args.docId != null) {
+                /**
+                 * Updating fabric details
+                 */
                 if (validateInputData()) {
                     addViewFabricInfoBinding.btnSaveFabricDetails.visibility = View.GONE
                     addViewFabricInfoBinding.pbImageUploading.visibility = View.VISIBLE
-
                     uploadImageToFirebase(true)
                 }
             } else {
+                /**
+                 * Saving new fabric details
+                 */
                 if (validateInputData()) {
                     addViewFabricInfoBinding.btnSaveFabricDetails.visibility = View.GONE
                     addViewFabricInfoBinding.pbImageUploading.visibility = View.VISIBLE
-
                     uploadImageToFirebase(false)
                 }
             }
 
         }
 
-        if (args.fabricCode != null) {
-            checkForExistingFabricCode(args.fabricCode!!)
+        if (args.docId != null) {
+            checkForExistingFabricCode(args.docId!!)
         }
     }
 
     private fun uploadImageToFirebase(isUpdate: Boolean) {
 
         val storageRef = storage.reference
-        val imageUploadRef = storageRef.child("fabric/${addViewFabricInfoBinding.etFabricCode.editText?.text.toString()}.jpg")
+        val imageUploadRef = storageRef.child("fabric/${args.docId}.jpg")
         try {
             val bitmap = (addViewFabricInfoBinding.ivUploadImage.drawable as BitmapDrawable).bitmap
             val baos = ByteArrayOutputStream()
@@ -117,11 +120,13 @@ class AddViewFabricInfoFragment : BaseFragment() {
                             imageUrl = downloadUrl.toString(),
                             rackNumber = addViewFabricInfoBinding.etRackNumber.editText?.text.toString(),
                             batch = addViewFabricInfoBinding.etBatch.editText?.text.toString(),
-                            fileNumber = addViewFabricInfoBinding.etFileNumber.editText?.text.toString()
+                            fileNumber = addViewFabricInfoBinding.etFileNumber.editText?.text.toString(),
+                            documentId = args.docId
                         )
 
                         if (isUpdate) {
-                            db.collection("fabric").document(fabricDocumentId)
+                            db.collection("fabric")
+                                .document(payload.documentId!!)
                                 .set(payload)
                                 .addOnFailureListener {
                                     Toast.makeText(
@@ -190,7 +195,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
         }
 
 
-    fun validateInputData(): Boolean {
+    private fun validateInputData(): Boolean {
         var allCorrect = true
 
         if (addViewFabricInfoBinding.etFabricCode.editText?.text.isNullOrEmpty()) {
@@ -251,22 +256,12 @@ class AddViewFabricInfoFragment : BaseFragment() {
         return allCorrect
     }
 
-    private fun checkForExistingFabricCode(fabricCode: String) {
+    private fun checkForExistingFabricCode(docId: String) {
         db.collection("fabric")
-            .whereEqualTo("fabricCode", fabricCode)
-            .limit(1)
+            .document(docId)
             .get()
             .addOnSuccessListener {
-                if (it.isEmpty) {
-                    Toast.makeText(
-                        requireContext(),
-                        "No such fabric code",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    findNavController().navigateUp()
-                } else {
-                    val document = it.documents[0]
-
+                    val document = it
                     val payload = FabricInfoModel(
                         fabricCode = document["fabricCode"].toString(),
                         fabricLength = if(document["fabricLength"]==null) "" else document["fabricLength"].toString(),
@@ -274,12 +269,11 @@ class AddViewFabricInfoFragment : BaseFragment() {
                         imageUrl = if(document["imageUrl"]==null) null else document["imageUrl"].toString(),
                         rackNumber =if(document["rackNumber"]==null) "" else document["rackNumber"].toString(),
                         batch = if(document["batch"]==null) "" else document["batch"].toString(),
-                        fileNumber = if(document["fileNumber"]==null) "" else document["fileNumber"].toString()
+                        fileNumber = if(document["fileNumber"]==null) "" else document["fileNumber"].toString(),
+                        documentId = docId
                     )
                     setUiWithData(payload)
-                    fabricDocumentId = document.id
 
-                }
             }
             .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }
 
