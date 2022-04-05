@@ -92,12 +92,5 @@
             android:id="@+id/action_listFabricFragment_to_enterFabricImageFragment"
             app:destination="@id/enterFabricImageFragment"
             app:popUpTo="@id/listFabricFragment" />
-        <action
-            android:id="@+id/action_listFabricFragment_to_displayRackNumberFragment"
-            app:destination="@id/displayRackNumberFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/displayRackNumberFragment"
-        android:name="com.shivam.raymond.fragments.DisplayRackNumberFragment"
-        android:label="DisplayRackNumberFragment" />
 </navigation>

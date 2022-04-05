@@ -121,8 +121,8 @@ class EnterFabricImageFragment : BaseFragment() {
                                 "Data added with success!",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            findNavController().navigateUp()
-                        }
+                            findNavController().popBackStack(R.id.homeFragment,true)
+                            findNavController().navigate(R.id.homeFragment)                     }
                         .addOnFailureListener { Timber.d("Failed to update image URL") }
                 }
 

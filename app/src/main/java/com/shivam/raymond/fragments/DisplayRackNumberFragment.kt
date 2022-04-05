@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
+import com.shivam.raymond.R
 import com.shivam.raymond.databinding.FragmentDisplayRackNumberBinding
 import timber.log.Timber
 
@@ -44,8 +45,7 @@ class DisplayRackNumberFragment : BaseFragment() {
                         "No such fabric code",
                         Toast.LENGTH_SHORT
                     ).show()
-                    findNavController().navigateUp()
-                } else {
+              } else {
                     val document = it.documents[0]
                     displayRackNumberBinding.tvFabricInfo.text = "Fabric Code: $fabricCode\nRack Number: ${document["rackNumber"]}"
 

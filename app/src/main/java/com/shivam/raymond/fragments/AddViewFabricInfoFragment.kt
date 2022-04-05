@@ -143,7 +143,8 @@ class AddViewFabricInfoFragment : BaseFragment() {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     Timber.d("Data updated successfully")
-                                    findNavController().navigateUp()
+                                    findNavController().popBackStack(R.id.homeFragment,true)
+                                    findNavController().navigate(R.id.homeFragment)
                                 }
                         } else {
                             db.collection("fabric")
@@ -163,7 +164,8 @@ class AddViewFabricInfoFragment : BaseFragment() {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     Timber.d("Data added successfully")
-                                    findNavController().navigateUp()
+                                    findNavController().popBackStack(R.id.homeFragment,true)
+                                    findNavController().navigate(R.id.homeFragment)
                                 }
                         }
 
@@ -209,10 +211,10 @@ class AddViewFabricInfoFragment : BaseFragment() {
             addViewFabricInfoBinding.etFabricCodeAgain.error = "Enter fabric code"
             allCorrect = false
         } else {
-            if (addViewFabricInfoBinding.etFabricCodeAgain.editText?.text.toString()!=addViewFabricInfoBinding.etFabricCode.editText?.text.toString()) {
+            if (addViewFabricInfoBinding.etFabricCodeAgain.editText?.text.toString() != addViewFabricInfoBinding.etFabricCode.editText?.text.toString()) {
                 addViewFabricInfoBinding.etFabricCodeAgain.error = "Fabric code doesn't match!"
                 allCorrect = false
-            } else{
+            } else {
                 addViewFabricInfoBinding.etFabricCodeAgain.error = null
             }
         }
@@ -261,18 +263,18 @@ class AddViewFabricInfoFragment : BaseFragment() {
             .document(docId)
             .get()
             .addOnSuccessListener {
-                    val document = it
-                    val payload = FabricInfoModel(
-                        fabricCode = document["fabricCode"].toString(),
-                        fabricLength = if(document["fabricLength"]==null) "" else document["fabricLength"].toString(),
-                        fabricWidth = if(document["fabricWidth"]==null) "" else document["fabricWidth"].toString(),
-                        imageUrl = if(document["imageUrl"]==null) null else document["imageUrl"].toString(),
-                        rackNumber =if(document["rackNumber"]==null) "" else document["rackNumber"].toString(),
-                        batch = if(document["batch"]==null) "" else document["batch"].toString(),
-                        fileNumber = if(document["fileNumber"]==null) "" else document["fileNumber"].toString(),
-                        documentId = docId
-                    )
-                    setUiWithData(payload)
+                val document = it
+                val payload = FabricInfoModel(
+                    fabricCode = document["fabricCode"].toString(),
+                    fabricLength = if (document["fabricLength"] == null) "" else document["fabricLength"].toString(),
+                    fabricWidth = if (document["fabricWidth"] == null) "" else document["fabricWidth"].toString(),
+                    imageUrl = if (document["imageUrl"] == null) null else document["imageUrl"].toString(),
+                    rackNumber = if (document["rackNumber"] == null) "" else document["rackNumber"].toString(),
+                    batch = if (document["batch"] == null) "" else document["batch"].toString(),
+                    fileNumber = if (document["fileNumber"] == null) "" else document["fileNumber"].toString(),
+                    documentId = docId
+                )
+                setUiWithData(payload)
 
             }
             .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }
@@ -287,9 +289,9 @@ class AddViewFabricInfoFragment : BaseFragment() {
         addViewFabricInfoBinding.etRackNumber.editText?.setText(fabricInfoItem.rackNumber)
         addViewFabricInfoBinding.etBatch.editText?.setText(fabricInfoItem.batch)
         addViewFabricInfoBinding.etFileNumber.editText?.setText(fabricInfoItem.fileNumber)
-        if(fabricInfoItem.imageUrl==null){
-            addViewFabricInfoBinding.ivUploadImage.visibility=View.GONE
-        }else{
+        if (fabricInfoItem.imageUrl == null) {
+            addViewFabricInfoBinding.ivUploadImage.visibility = View.GONE
+        } else {
             addViewFabricInfoBinding.ivUploadImage.visibility = View.VISIBLE
             addViewFabricInfoBinding.ivUploadImage.load(fabricInfoItem.imageUrl)
             addViewFabricInfoBinding.btnCaptureImage.text = getString(R.string.capture_image_again)
