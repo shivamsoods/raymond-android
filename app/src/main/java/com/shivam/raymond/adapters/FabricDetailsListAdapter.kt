@@ -1,8 +1,10 @@
 package com.shivam.raymond.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.shivam.raymond.databinding.FabricListItemBinding
 import com.shivam.raymond.models.FabricInfoModel
 import timber.log.Timber
@@ -37,6 +39,13 @@ class FabricDetailsListAdapter(private var fabricInfoList: List<FabricInfoModel>
             dataBinding.tvFabricCode.text = "Fabric Code: ${singleFabricItem.fabricCode}"
             dataBinding.tvRackNumber.text = "Rack: ${singleFabricItem.rackNumber}"
 
+            if(singleFabricItem.imageUrl !=null){
+                dataBinding.ivFabricImage.visibility=View.VISIBLE
+                dataBinding.ivFabricImage.load(singleFabricItem.imageUrl)
+            }else{
+                dataBinding.ivFabricImage.visibility=View.GONE
+
+            }
 
         }
     }
