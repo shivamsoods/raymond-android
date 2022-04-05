@@ -92,5 +92,43 @@
             android:id="@+id/action_listFabricFragment_to_enterFabricImageFragment"
             app:destination="@id/enterFabricImageFragment"
             app:popUpTo="@id/listFabricFragment" />
+        <action
+            android:id="@+id/action_listFabricFragment_to_displayRackNumberFragment"
+            app:destination="@id/displayRackNumberFragment"
+            app:popUpTo="@id/listFabricFragment" />
+    </fragment>
+    <fragment
+        tools:layout="@layout/fragment_display_rack_number"
+        android:id="@+id/displayRackNumberFragment"
+        android:name="com.shivam.raymond.fragments.DisplayRackNumberFragment"
+        android:label="Fabric Info" >
+        <argument
+            android:name="docId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_displayRackNumberFragment_to_scanQrCodeAgainFragment"
+            app:destination="@id/scanQrCodeAgainFragment"
+            app:popUpTo="@id/displayRackNumberFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/scanQrCodeAgainFragment"
+        android:name="com.shivam.raymond.fragments.ScanQrCodeAgainFragment"
+        android:label="Scan QR again"
+        tools:layout="@layout/fragment_scan_qr_code_again" >
+        <argument android:name="docId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_scanQrCodeAgainFragment_to_fabricDetailFragment"
+            app:destination="@id/fabricDetailFragment"
+            app:popUpTo="@id/displayRackNumberFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/fabricDetailFragment"
+        android:name="com.shivam.raymond.fragments.FabricDetailFragment"
+        android:label="Fabric Detail"
+        tools:layout="@layout/fragment_fabric_detail" >
+        <argument
+            android:name="docId"
+            app:argType="string" />
     </fragment>
 </navigation>

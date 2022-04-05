@@ -25,7 +25,10 @@ class HomeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+homeBinding.btnGotoQrCodeScanning.setOnClickListener {
+    findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(ScanQrEnum.QR_CODE_FLOW))
 
+}
 
         homeBinding.btnGotoAddFabricImage.setOnClickListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(ScanQrEnum.ADD_IMAGE))

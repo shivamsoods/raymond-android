@@ -21,5 +21,7 @@
     <string name="qr_code_scanning">Qr Code Scanning</string>
     <string name="next">Next</string>
     <string name="select_a_fabric_from_the_list">Select a fabric from the list</string>
+    <string name="wrong_qr_scanned">Wrong QR Scanned!</string>
+    <string name="done">Done</string>
 
 </resources>

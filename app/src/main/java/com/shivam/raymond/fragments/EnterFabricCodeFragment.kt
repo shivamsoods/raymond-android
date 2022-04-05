@@ -122,22 +122,8 @@ class EnterFabricCodeFragment : BaseFragment() {
                     ).show()
                 } else {
                     Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
-                    when (args.viewType) {
-                        ScanQrEnum.VIEW_MODIFY_FABRIC_DETAIL -> {
-                            findNavController().navigate(
-                                EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToListFabricFragment(fabricCode,args.viewType)
-                            )
-                        }
-                        ScanQrEnum.ADD_IMAGE -> {
 
-                            findNavController().navigate(
-                                EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToListFabricFragment(
-                                    fabricCode,args.viewType
-                                )
-                            )
-                        }
-
-                    }
+                    findNavController().navigate(EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToListFabricFragment(fabricCode,args.viewType))
 
                 }
 

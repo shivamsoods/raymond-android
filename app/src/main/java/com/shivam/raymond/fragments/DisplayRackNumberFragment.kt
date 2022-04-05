@@ -4,17 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
-import com.shivam.raymond.R
 import com.shivam.raymond.databinding.FragmentDisplayRackNumberBinding
 import timber.log.Timber
 
 
 class DisplayRackNumberFragment : BaseFragment() {
     private lateinit var displayRackNumberBinding: FragmentDisplayRackNumberBinding
+    private val args: DisplayRackNumberFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,34 +25,33 @@ class DisplayRackNumberFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        checkForExistingFabricCode(args.fabricCode)
+        checkForExistingFabricCode(args.docId)
 
         displayRackNumberBinding.btnNext.setOnClickListener {
-
+            findNavController().navigate(
+                DisplayRackNumberFragmentDirections.actionDisplayRackNumberFragmentToScanQrCodeAgainFragment(
+                    args.docId
+                )
+            )
         }
     }
 
-    private fun checkForExistingFabricCode(fabricCode: String) {
+    private fun checkForExistingFabricCode(docId: String) {
         db.collection("fabric")
-            .whereEqualTo("fabricCode", fabricCode)
-            .limit(1)
+            .document(docId)
             .get()
             .addOnSuccessListener {
-                if (it.isEmpty) {
-                    Toast.makeText(
-                        requireContext(),
-                        "No such fabric code",
-                        Toast.LENGTH_SHORT
-                    ).show()
-              } else {
-                    val document = it.documents[0]
-                    displayRackNumberBinding.tvFabricInfo.text = "Fabric Code: $fabricCode\nRack Number: ${document["rackNumber"]}"
+                displayRackNumberBinding.btnNext.visibility = View.VISIBLE
+                val document = it
+                displayRackNumberBinding.tvFabricInfo.text = "Fabric Code: ${document["fabricCode"]}\nRack Number: ${document["rackNumber"]}\nBatch: ${document["batch"]}"
 
-                    if (document["imageUrl"] != null) {
-                        displayRackNumberBinding.ivUploadImage.load(document["imageUrl"])
-                        displayRackNumberBinding.ivUploadImage.visibility = View.VISIBLE
-                    }
+                if (document["imageUrl"] != null) {
+                    displayRackNumberBinding.ivUploadImage.load(document["imageUrl"])
+                    displayRackNumberBinding.ivUploadImage.visibility = View.VISIBLE
+                } else {
+                    displayRackNumberBinding.ivUploadImage.visibility = View.GONE
                 }
+
             }
             .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }
 

@@ -24,8 +24,6 @@ class EnterFabricImageFragment : BaseFragment() {
     private lateinit var enterFabricImageBinding: FragmentEnterFabricImageBinding
     private val args: EnterFabricImageFragmentArgs by navArgs()
 
-
-    private var fabricDocumentId = ""
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -112,7 +110,7 @@ class EnterFabricImageFragment : BaseFragment() {
                 Timber.d("Successfully uploaded Image")
                 imageUploadRef.downloadUrl.addOnSuccessListener {
                     db.collection("fabric")
-                        .document(fabricDocumentId)
+                        .document(docId)
                         .update("imageUrl", it.toString())
                         .addOnSuccessListener {
                             Timber.d("Successfully updated image URL")
@@ -137,8 +135,7 @@ class EnterFabricImageFragment : BaseFragment() {
             .addOnSuccessListener {
                 enterFabricImageBinding.btnCaptureImage.visibility = View.VISIBLE
                 val document = it
-                fabricDocumentId = document.id
-                enterFabricImageBinding.tvFabricInfo.text = "Fabric Code: ${it["fabricCode"]}\nRack Number: ${document["rackNumber"]}\nBatch: ${document["batch"]}"
+                enterFabricImageBinding.tvFabricInfo.text = "Fabric Code: ${document["fabricCode"]}\nRack Number: ${document["rackNumber"]}\nBatch: ${document["batch"]}"
 
                 if (document["imageUrl"] != null) {
                     enterFabricImageBinding.ivUploadImage.load(document["imageUrl"])
