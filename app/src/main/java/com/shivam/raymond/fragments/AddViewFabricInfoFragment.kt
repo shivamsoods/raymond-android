@@ -3,7 +3,9 @@ package com.shivam.raymond.fragments
 import android.Manifest
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -11,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
@@ -19,6 +22,10 @@ import com.shivam.raymond.databinding.FragmentAddViewFabricInfoBinding
 import com.shivam.raymond.models.FabricInfoModel
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+
 
 class AddViewFabricInfoFragment : BaseFragment() {
     private lateinit var addViewFabricInfoBinding: FragmentAddViewFabricInfoBinding
@@ -36,8 +43,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            cameraCaptureIntent.launch(cameraIntent)
+            launchCameraIntent()
         } else {
             Toast.makeText(
                 requireContext(),
@@ -47,14 +53,57 @@ class AddViewFabricInfoFragment : BaseFragment() {
         }
     }
 
+    lateinit var photoUri: Uri
+    private fun launchCameraIntent() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { cameraIntent ->
+            val photoFile: File? = try {
+                createImageFile()
+            } catch (ex: java.lang.Exception) {
+                Timber.e("poiu Error creating file $ex")
+                null
+            }
+
+            photoFile?.also {
+                val photoURI = FileProvider.getUriForFile(
+                    requireActivity(),
+                    "com.shivam.raymond.fileProvider",
+                    it
+                )
+                photoUri=photoURI
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                Timber.d("poiu PhotoUri-> $photoURI")
+                cameraCaptureIntent.launch(cameraIntent)
+            }
+        }
+    }
+
+    lateinit var currentPhotoPath: String
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(System.currentTimeMillis())
+        val storageDir = requireActivity().cacheDir
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply {
+
+            // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+            Timber.d("poiu File created in cache-> $currentPhotoPath")
+        }
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
         addViewFabricInfoBinding.btnCaptureImage.setOnClickListener {
             if (hasPermission(Manifest.permission.CAMERA)) {
-                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                cameraCaptureIntent.launch(cameraIntent)
+                launchCameraIntent()
             } else {
                 permissionLauncher.launch(Manifest.permission.CAMERA)
             }
@@ -92,14 +141,15 @@ class AddViewFabricInfoFragment : BaseFragment() {
     private fun uploadImageToFirebase(isUpdate: Boolean) {
 
         val storageRef = storage.reference
-        val imageUploadRef = storageRef.child("fabric/${args.docId}.jpg")
-        try {
-            val bitmap = (addViewFabricInfoBinding.ivUploadImage.drawable as BitmapDrawable).bitmap
-            val baos = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-            val data = baos.toByteArray()
 
-            imageUploadRef.putBytes(data)
+        val imageUploadRef = if (args.docId != null) {
+            storageRef.child("fabric/${args.docId}.jpg")
+        } else {
+            storageRef.child("fabric/${System.currentTimeMillis()}.jpg")
+        }
+        try {
+
+            imageUploadRef.putFile(photoUri)
                 .addOnFailureListener {
                     addViewFabricInfoBinding.btnSaveFabricDetails.visibility = View.VISIBLE
                     addViewFabricInfoBinding.pbImageUploading.visibility = View.GONE
@@ -143,7 +193,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     Timber.d("Data updated successfully")
-                                    findNavController().popBackStack(R.id.homeFragment,true)
+                                    findNavController().popBackStack(R.id.homeFragment, true)
                                     findNavController().navigate(R.id.homeFragment)
                                 }
                         } else {
@@ -164,7 +214,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                     Timber.d("Data added successfully")
-                                    findNavController().popBackStack(R.id.homeFragment,true)
+                                    findNavController().popBackStack(R.id.homeFragment, true)
                                     findNavController().navigate(R.id.homeFragment)
                                 }
                         }
@@ -179,11 +229,10 @@ class AddViewFabricInfoFragment : BaseFragment() {
     }
 
     private var cameraCaptureIntent =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             try {
-
-                val photo = result.data!!.extras!!.get("data") as Bitmap
-                addViewFabricInfoBinding.ivUploadImage.setImageBitmap(photo)
+                val takenImage = BitmapFactory.decodeFile(currentPhotoPath)
+                addViewFabricInfoBinding.ivUploadImage.load(takenImage)
                 addViewFabricInfoBinding.ivUploadImage.visibility = View.VISIBLE
                 addViewFabricInfoBinding.btnCaptureImage.text = getString(R.string.capture_image_again)
 
