@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat
 class EnterFabricImageFragment : BaseFragment() {
     private lateinit var enterFabricImageBinding: FragmentEnterFabricImageBinding
     private val args: EnterFabricImageFragmentArgs by navArgs()
+    private lateinit var imageDownloadUrl: String
+    var isImageChanged = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -183,6 +185,7 @@ class EnterFabricImageFragment : BaseFragment() {
                     enterFabricImageBinding.ivUploadImage.visibility = View.VISIBLE
                     enterFabricImageBinding.btnCaptureImage.text = getString(R.string.capture_image_again)
                 }
+
 
             }
             .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }

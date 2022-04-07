@@ -2,9 +2,7 @@ package com.shivam.raymond.fragments
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -21,7 +19,6 @@ import com.shivam.raymond.R
 import com.shivam.raymond.databinding.FragmentAddViewFabricInfoBinding
 import com.shivam.raymond.models.FabricInfoModel
 import timber.log.Timber
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -30,6 +27,8 @@ import java.text.SimpleDateFormat
 class AddViewFabricInfoFragment : BaseFragment() {
     private lateinit var addViewFabricInfoBinding: FragmentAddViewFabricInfoBinding
     private val args: AddViewFabricInfoFragmentArgs by navArgs()
+    private lateinit var imageDownloadUrl: String
+    var isImageChanged = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -69,7 +68,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
                     "com.shivam.raymond.fileProvider",
                     it
                 )
-                photoUri=photoURI
+                photoUri = photoURI
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
                 Timber.d("poiu PhotoUri-> $photoURI")
                 cameraCaptureIntent.launch(cameraIntent)
@@ -118,7 +117,11 @@ class AddViewFabricInfoFragment : BaseFragment() {
                 if (validateInputData()) {
                     addViewFabricInfoBinding.btnSaveFabricDetails.visibility = View.GONE
                     addViewFabricInfoBinding.pbImageUploading.visibility = View.VISIBLE
-                    uploadImageToFirebase(true)
+                    if (isImageChanged) {
+                        uploadImageToFirebase(true)
+                    } else {
+                        updateDataOnlyToFirebase(imageDownloadUrl)
+                    }
                 }
             } else {
                 /**
@@ -136,6 +139,41 @@ class AddViewFabricInfoFragment : BaseFragment() {
         if (args.docId != null) {
             checkForExistingFabricCode(args.docId!!)
         }
+    }
+
+    private fun updateDataOnlyToFirebase(downloadUrl: String) {
+        val payload = FabricInfoModel(
+            fabricCode = addViewFabricInfoBinding.etFabricCode.editText?.text.toString(),
+            fabricLength = addViewFabricInfoBinding.etFabricLength.editText?.text.toString(),
+            fabricWidth = addViewFabricInfoBinding.etFabricWidth.editText?.text.toString(),
+            imageUrl = downloadUrl,
+            rackNumber = addViewFabricInfoBinding.etRackNumber.editText?.text.toString(),
+            batch = addViewFabricInfoBinding.etBatch.editText?.text.toString(),
+            fileNumber = addViewFabricInfoBinding.etFileNumber.editText?.text.toString(),
+            documentId = args.docId
+        )
+
+        db.collection("fabric")
+            .document(payload.documentId!!)
+            .set(payload)
+            .addOnFailureListener {
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to add data",
+                    Toast.LENGTH_SHORT
+                ).show()
+                Timber.e("Failed to add data")
+            }
+            .addOnSuccessListener {
+                Toast.makeText(
+                    requireContext(),
+                    "Data updated successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
+                Timber.d("Data updated successfully")
+                findNavController().popBackStack(R.id.homeFragment, true)
+                findNavController().navigate(R.id.homeFragment)
+            }
     }
 
     private fun uploadImageToFirebase(isUpdate: Boolean) {
@@ -175,27 +213,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
                         )
 
                         if (isUpdate) {
-                            db.collection("fabric")
-                                .document(payload.documentId!!)
-                                .set(payload)
-                                .addOnFailureListener {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Failed to add data",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    Timber.e("Failed to add data")
-                                }
-                                .addOnSuccessListener {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Data updated successfully",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    Timber.d("Data updated successfully")
-                                    findNavController().popBackStack(R.id.homeFragment, true)
-                                    findNavController().navigate(R.id.homeFragment)
-                                }
+                            updateDataOnlyToFirebase(payload.imageUrl!!)
                         } else {
                             db.collection("fabric")
                                 .add(payload)
@@ -235,7 +253,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
                 addViewFabricInfoBinding.ivUploadImage.load(takenImage)
                 addViewFabricInfoBinding.ivUploadImage.visibility = View.VISIBLE
                 addViewFabricInfoBinding.btnCaptureImage.text = getString(R.string.capture_image_again)
-
+                isImageChanged = true
 
             } catch (e: Exception) {
                 addViewFabricInfoBinding.ivUploadImage.visibility = View.GONE
@@ -324,7 +342,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
                     documentId = docId
                 )
                 setUiWithData(payload)
-
+                imageDownloadUrl = payload.imageUrl.toString()
             }
             .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }
 
