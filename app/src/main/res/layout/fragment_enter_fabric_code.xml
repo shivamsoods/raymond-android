@@ -73,6 +73,12 @@
             android:textAllCaps="false"
             android:visibility="gone" />
 
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/pbFabricSearching"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.constraintlayout.widget.ConstraintLayout>

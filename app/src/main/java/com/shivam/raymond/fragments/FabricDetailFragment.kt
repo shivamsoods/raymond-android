@@ -35,6 +35,8 @@ checkForExistingFabricCode(args.docId)
         }
 
 
+
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -62,9 +64,14 @@ checkForExistingFabricCode(args.docId)
                 if (payload.imageUrl != null) {
                     fabricDetailBinding.ivUploadImage.load(payload.imageUrl)
                     fabricDetailBinding.ivUploadImage.visibility = View.VISIBLE
+                    fabricDetailBinding.ivUploadImage.setOnClickListener {
+                        findNavController().navigate(FabricDetailFragmentDirections.actionFabricDetailFragmentToFullScreenImageFragment(payload.imageUrl))
+                    }
                 } else {
                     fabricDetailBinding.ivUploadImage.visibility = View.GONE
                 }
+
+
 
             }
             .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }

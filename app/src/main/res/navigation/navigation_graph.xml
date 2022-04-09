@@ -56,7 +56,10 @@
         android:label="Upload Fabric Image"
         tools:layout="@layout/fragment_enter_fabric_image">
         <argument
-            android:name="docId"
+            android:name="docIds"
+            app:argType="string[]" />
+        <argument
+            android:name="fabricCode"
             app:argType="string" />
     </fragment>
     <fragment
@@ -72,6 +75,10 @@
         <argument
             android:name="label"
             app:argType="string" />
+        <argument
+            android:name="fabricCode"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/listFabricFragment"
@@ -129,6 +136,18 @@
         tools:layout="@layout/fragment_fabric_detail" >
         <argument
             android:name="docId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_fabricDetailFragment_to_fullScreenImageFragment"
+            app:destination="@id/fullScreenImageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/fullScreenImageFragment"
+        android:name="com.shivam.raymond.fragments.FullScreenImageFragment"
+        android:label="Full Screen Image"
+        tools:layout="@layout/fragment_full_screen_image" >
+        <argument
+            android:name="imageUri"
             app:argType="string" />
     </fragment>
 </navigation>

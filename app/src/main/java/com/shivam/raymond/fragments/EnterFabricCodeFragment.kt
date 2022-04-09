@@ -69,11 +69,16 @@ class EnterFabricCodeFragment : BaseFragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s != null) {
-                    if (s.count() >= 3) {
-                        enterFabricCodeBinding.etFabricCode.error = null
+
+                    if (s.toString() == enterFabricCodeBinding.etFabricCodeAgain.editText?.text.toString()) {
+                        enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.VISIBLE
+                        enterFabricCodeBinding.etFabricCodeAgain.error = null
+
                     } else {
-                        enterFabricCodeBinding.etFabricCode.error = "Fabric code is more than 3 digits"
+                        enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.GONE
+                        enterFabricCodeBinding.etFabricCodeAgain.error = "Fabric codes doesn't match"
                     }
+
                 }
             }
 
@@ -105,6 +110,8 @@ class EnterFabricCodeFragment : BaseFragment() {
 
         enterFabricCodeBinding.btnSubmitFabricCode.setOnClickListener {
             val fabricCode = enterFabricCodeBinding.etFabricCode.editText?.text.toString()
+            enterFabricCodeBinding.pbFabricSearching.visibility=View.VISIBLE
+            enterFabricCodeBinding.btnSubmitFabricCode.visibility=View.GONE
             checkForExistingFabricCode(fabricCode)
         }
     }

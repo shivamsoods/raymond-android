@@ -12,12 +12,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
 import com.shivam.raymond.R
 import com.shivam.raymond.databinding.FragmentAddViewFabricInfoBinding
 import com.shivam.raymond.models.FabricInfoModel
+import id.zelory.compressor.Compressor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.io.IOException
@@ -180,11 +184,8 @@ class AddViewFabricInfoFragment : BaseFragment() {
 
         val storageRef = storage.reference
 
-        val imageUploadRef = if (args.docId != null) {
-            storageRef.child("fabric/${args.docId}.jpg")
-        } else {
-            storageRef.child("fabric/${System.currentTimeMillis()}.jpg")
-        }
+        val imageUploadRef=storageRef.child("fabric/${args.fabricCode}.jpg")
+
         try {
 
             imageUploadRef.putFile(photoUri)
@@ -209,7 +210,7 @@ class AddViewFabricInfoFragment : BaseFragment() {
                             rackNumber = addViewFabricInfoBinding.etRackNumber.editText?.text.toString(),
                             batch = addViewFabricInfoBinding.etBatch.editText?.text.toString(),
                             fileNumber = addViewFabricInfoBinding.etFileNumber.editText?.text.toString(),
-                            documentId = args.docId
+                            documentId = null
                         )
 
                         if (isUpdate) {
@@ -249,8 +250,19 @@ class AddViewFabricInfoFragment : BaseFragment() {
     private var cameraCaptureIntent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             try {
-                val takenImage = BitmapFactory.decodeFile(currentPhotoPath)
-                addViewFabricInfoBinding.ivUploadImage.load(takenImage)
+
+                lifecycleScope.launch(Dispatchers.IO) {
+                    Compressor.compress(requireContext(), File(currentPhotoPath)).also {
+                        photoUri = FileProvider.getUriForFile(
+                            requireActivity(),
+                            "com.shivam.raymond.fileProvider",
+                            it
+                        )
+                    }
+
+                }
+
+                addViewFabricInfoBinding.ivUploadImage.load(photoUri)
                 addViewFabricInfoBinding.ivUploadImage.visibility = View.VISIBLE
                 addViewFabricInfoBinding.btnCaptureImage.text = getString(R.string.capture_image_again)
                 isImageChanged = true

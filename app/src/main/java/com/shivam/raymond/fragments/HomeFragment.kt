@@ -35,7 +35,7 @@ homeBinding.btnGotoQrCodeScanning.setOnClickListener {
         }
 
         homeBinding.btnGotoAddFabricDetail.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddViewFabricInfoFragment(null,"Add New Fabric"))
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddViewFabricInfoFragment(null,"Add New Fabric",null))
         }
 
         homeBinding.btnGotoViewModifyFabricDetail.setOnClickListener {

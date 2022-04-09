@@ -2,10 +2,10 @@ package com.shivam.raymond.fragments
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.FileUtils
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +13,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
 import com.shivam.raymond.R
 import com.shivam.raymond.databinding.FragmentEnterFabricImageBinding
+import id.zelory.compressor.Compressor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -42,7 +46,7 @@ class EnterFabricImageFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        checkForExistingFabricCode(args.docId)
+        checkForExistingFabricCode()
 
         enterFabricImageBinding.btnCaptureImage.setOnClickListener {
             if (hasPermission(Manifest.permission.CAMERA)) {
@@ -115,18 +119,31 @@ class EnterFabricImageFragment : BaseFragment() {
     private var cameraCaptureIntent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             try {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    Compressor.compress(requireContext(), File(currentPhotoPath)).also {
+                         photoUri = FileProvider.getUriForFile(
+                            requireActivity(),
+                            "com.shivam.raymond.fileProvider",
+                            it
+                        )
+                    }
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        enterFabricImageBinding.btnSaveFabricDetails.visibility = View.VISIBLE
+                    }
+                }
 
-                val takenImage = BitmapFactory.decodeFile(currentPhotoPath)
-                enterFabricImageBinding.ivUploadImage.load(takenImage)
+                enterFabricImageBinding.ivUploadImage.load(photoUri)
                 enterFabricImageBinding.ivUploadImage.visibility = View.VISIBLE
                 enterFabricImageBinding.btnCaptureImage.text = getString(R.string.capture_image_again)
 
-                enterFabricImageBinding.btnSaveFabricDetails.visibility = View.VISIBLE
                 enterFabricImageBinding.btnSaveFabricDetails.setOnClickListener {
                     it.visibility = View.GONE
                     enterFabricImageBinding.pbImageUploading.visibility = View.VISIBLE
-                    uploadImageToFirebase(args.docId)
+                    uploadImageToFirebase()
                 }
+
+
+
             } catch (e: Exception) {
                 enterFabricImageBinding.ivUploadImage.visibility = View.GONE
                 enterFabricImageBinding.btnCaptureImage.text = getString(R.string.capture_image)
@@ -137,9 +154,9 @@ class EnterFabricImageFragment : BaseFragment() {
         }
 
 
-    private fun uploadImageToFirebase(docId: String) {
+    private fun uploadImageToFirebase() {
         val storageRef = storage.reference
-        val imageUploadRef = storageRef.child("fabric/$docId.jpg")
+        val imageUploadRef = storageRef.child("fabric/${args.fabricCode}.jpg")
 
         imageUploadRef.putFile(photoUri)
             .addOnFailureListener {
@@ -151,19 +168,27 @@ class EnterFabricImageFragment : BaseFragment() {
             .addOnSuccessListener {
                 Timber.d("Successfully uploaded Image")
                 imageUploadRef.downloadUrl.addOnSuccessListener {
-                    db.collection("fabric")
-                        .document(docId)
-                        .update("imageUrl", it.toString())
-                        .addOnSuccessListener {
-                            Timber.d("Successfully updated image URL")
-                            Toast.makeText(
-                                requireContext(),
-                                "Data added with success!",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            findNavController().popBackStack(R.id.homeFragment,true)
-                            findNavController().navigate(R.id.homeFragment)                     }
-                        .addOnFailureListener { Timber.d("Failed to update image URL") }
+
+                    args.docIds.forEach {docId->
+                        db.collection("fabric")
+                            .document(docId)
+                            .update("imageUrl", it.toString())
+                            .addOnSuccessListener {
+                                Timber.d("Successfully updated image URL")
+                                                }
+                            .addOnFailureListener { Timber.d("Failed to update image URL") }
+                    }
+                    Toast.makeText(
+                        requireContext(),
+                        "Data added with success!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    findNavController().popBackStack(R.id.homeFragment,true)
+                    findNavController().navigate(R.id.homeFragment)
+
+
+
                 }
 
 
@@ -171,13 +196,14 @@ class EnterFabricImageFragment : BaseFragment() {
     }
 
 
-    private fun checkForExistingFabricCode(docId: String) {
+    private fun checkForExistingFabricCode() {
         db.collection("fabric")
-            .document(docId)
+            .whereEqualTo("fabricCode",args.fabricCode)
+            .limit(1)
             .get()
             .addOnSuccessListener {
+                val document= it.documents[0]
                 enterFabricImageBinding.btnCaptureImage.visibility = View.VISIBLE
-                val document = it
                 enterFabricImageBinding.tvFabricInfo.text = "Fabric Code: ${document["fabricCode"]}\nRack Number: ${document["rackNumber"]}\nBatch: ${document["batch"]}"
 
                 if (document["imageUrl"] != null) {

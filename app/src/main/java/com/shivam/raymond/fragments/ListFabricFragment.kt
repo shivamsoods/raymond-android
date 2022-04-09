@@ -79,27 +79,39 @@ class ListFabricFragment : BaseFragment(), FabricItemClickListener {
 
     override fun onFabricItemClick(itemPosition: Int) {
         super.onFabricItemClick(itemPosition)
-val docId=                        fabricDetailList[itemPosition].documentId!!
+        val docId = fabricDetailList[itemPosition].documentId!!
+        val fabricCode= fabricDetailList[itemPosition].fabricCode
 
         when (args.viewType) {
             ScanQrEnum.ADD_IMAGE -> {
 
+                val docIds=ArrayList<String>()
+                fabricDetailList.forEach {
+                    docIds.add(it.documentId!!)
+                }
+
+
                 findNavController().navigate(
                     ListFabricFragmentDirections.actionListFabricFragmentToEnterFabricImageFragment(
-                  docId  )
+                       docIds.toTypedArray(), args.fabricCode
+                    )
                 )
 
             }
             ScanQrEnum.VIEW_MODIFY_FABRIC_DETAIL -> {
                 findNavController().navigate(
                     ListFabricFragmentDirections.actionListFabricFragmentToAddViewFabricInfoFragment(
-docId,                        "View/Modify Fabric"
+                        docId, "View/Modify Fabric", fabricCode
                     )
                 )
             }
 
-            ScanQrEnum.QR_CODE_FLOW->{
-                findNavController().navigate(ListFabricFragmentDirections.actionListFabricFragmentToDisplayRackNumberFragment(docId))
+            ScanQrEnum.QR_CODE_FLOW -> {
+                findNavController().navigate(
+                    ListFabricFragmentDirections.actionListFabricFragmentToDisplayRackNumberFragment(
+                        docId
+                    )
+                )
             }
         }
     }

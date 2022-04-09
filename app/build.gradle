@@ -50,8 +50,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage-ktx'
 
     //Navigation
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     //QR Code Scanner
@@ -63,5 +63,10 @@ dependencies {
     //Coil
     implementation("io.coil-kt:coil:2.0.0-rc02")
 
+    //Image Compressor
+    implementation 'id.zelory:compressor:3.0.1'
+
+    //Full screen Image
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
 }
