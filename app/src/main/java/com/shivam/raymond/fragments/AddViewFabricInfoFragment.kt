@@ -184,7 +184,12 @@ class AddViewFabricInfoFragment : BaseFragment() {
 
         val storageRef = storage.reference
 
-        val imageUploadRef=storageRef.child("fabric/${args.fabricCode}.jpg")
+        val imageName=if(args.fabricCode==null){
+            addViewFabricInfoBinding.etFabricCode.editText?.text.toString()
+        }else{
+            args.fabricCode
+        }
+        val imageUploadRef=storageRef.child("fabric/$imageName.jpg")
 
         try {
 
