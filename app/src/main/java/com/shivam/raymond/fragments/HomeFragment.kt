@@ -25,21 +25,38 @@ class HomeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-homeBinding.btnGotoQrCodeScanning.setOnClickListener {
-    findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(ScanQrEnum.QR_CODE_FLOW))
-
-}
+        homeBinding.btnGotoQrCodeScanning.setOnClickListener {
+            findNavController().navigate(
+                HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(
+                    ScanQrEnum.QR_CODE_FLOW
+                )
+            )
+        }
 
         homeBinding.btnGotoAddFabricImage.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(ScanQrEnum.ADD_IMAGE))
+            findNavController().navigate(
+                HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(
+                    ScanQrEnum.ADD_IMAGE
+                )
+            )
         }
 
         homeBinding.btnGotoAddFabricDetail.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddViewFabricInfoFragment(null,"Add New Fabric",null))
+            findNavController().navigate(
+                HomeFragmentDirections.actionHomeFragmentToAddViewFabricInfoFragment(
+                    null,
+                    "Add New Fabric",
+                    null
+                )
+            )
         }
 
         homeBinding.btnGotoViewModifyFabricDetail.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(ScanQrEnum.VIEW_MODIFY_FABRIC_DETAIL))
+            findNavController().navigate(
+                HomeFragmentDirections.actionHomeFragmentToEnterFabricCodeFragment(
+                    ScanQrEnum.VIEW_MODIFY_FABRIC_DETAIL
+                )
+            )
         }
     }
 
