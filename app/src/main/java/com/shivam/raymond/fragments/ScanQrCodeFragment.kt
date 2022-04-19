@@ -96,6 +96,8 @@ class ScanQrCodeFragment : BaseFragment() {
             lifecycleScope.launch(Dispatchers.Main) {
                 if (fabricResponse.body()!!.isEmpty()) {
                     Toast.makeText(requireContext(), "No such fabric code", Toast.LENGTH_SHORT).show()
+                    findNavController().navigateUp()
+
                 } else {
                     Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
                     findNavController().navigate(ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToListFabricFragment(fabricCode, args.viewType))
