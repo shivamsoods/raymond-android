@@ -35,6 +35,7 @@ class FabricDetailsListAdapter(private var fabricInfoList: List<FabricInfoModel>
             dataBinding.root.setOnClickListener {
                 fabricItemClickListener.onFabricItemClick(itemPosition)
             }
+
             dataBinding.tvFabricBatch.text = "Batch: ${singleFabricItem.batch}"
             dataBinding.tvFabricCode.text = "Fabric Code: ${singleFabricItem.fabricCode}"
             dataBinding.tvRackNumber.text = "Rack: ${singleFabricItem.rackNumber}"
@@ -42,6 +43,9 @@ class FabricDetailsListAdapter(private var fabricInfoList: List<FabricInfoModel>
             if(singleFabricItem.imageUrl !=null){
                 dataBinding.ivFabricImage.visibility=View.VISIBLE
                 dataBinding.ivFabricImage.load(singleFabricItem.imageUrl)
+                dataBinding.ivFabricImage.setOnClickListener {
+                    fabricItemClickListener.onFabricImageClick(itemPosition)
+                }
             }else{
                 dataBinding.ivFabricImage.visibility=View.GONE
 
@@ -58,6 +62,7 @@ class FabricDetailsListAdapter(private var fabricInfoList: List<FabricInfoModel>
 
 interface FabricItemClickListener {
     fun onFabricItemClick(itemPosition: Int) {}
+    fun onFabricImageClick(itemPosition: Int){}
 }
 
 

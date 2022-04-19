@@ -9,10 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.shivam.raymond.ScanQrEnum
 import com.shivam.raymond.databinding.FragmentEnterFabricCodeBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
@@ -86,7 +89,8 @@ class EnterFabricCodeFragment : BaseFragment() {
             }
         })
 
-        enterFabricCodeBinding.etFabricCodeAgain.editText?.addTextChangedListener(object : TextWatcher {
+        enterFabricCodeBinding.etFabricCodeAgain.editText?.addTextChangedListener(object :
+            TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -110,9 +114,16 @@ class EnterFabricCodeFragment : BaseFragment() {
 
         enterFabricCodeBinding.btnSubmitFabricCode.setOnClickListener {
             val fabricCode = enterFabricCodeBinding.etFabricCode.editText?.text.toString()
-            enterFabricCodeBinding.pbFabricSearching.visibility=View.VISIBLE
-            enterFabricCodeBinding.btnSubmitFabricCode.visibility=View.GONE
-            checkForExistingFabricCode(fabricCode)
+            enterFabricCodeBinding.pbFabricSearching.visibility = View.VISIBLE
+            enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.GONE
+            if (args.viewType == ScanQrEnum.API_FLOW) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    getFabricApiInfo(fabricCode)
+                }
+            } else {
+
+                checkForExistingFabricCode(fabricCode)
+            }
         }
     }
 
@@ -127,10 +138,18 @@ class EnterFabricCodeFragment : BaseFragment() {
                         "No such fabric code",
                         Toast.LENGTH_SHORT
                     ).show()
+
+                    enterFabricCodeBinding.pbFabricSearching.visibility = View.GONE
+                    enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.VISIBLE
                 } else {
                     Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
 
-                    findNavController().navigate(EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToListFabricFragment(fabricCode,args.viewType))
+                    findNavController().navigate(
+                        EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToListFabricFragment(
+                            fabricCode,
+                            args.viewType
+                        )
+                    )
 
                 }
 
@@ -141,4 +160,35 @@ class EnterFabricCodeFragment : BaseFragment() {
 
     }
 
+    private suspend fun getFabricApiInfo(fabricCode: String) {
+        val fabricResponse = apiService.getFabricInfo(fabricCode)
+        if (fabricResponse.isSuccessful && fabricResponse.body() != null) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                Timber.d("Fabric Info=> ${fabricResponse.body()!!}")
+                if (fabricResponse.body()!!.isEmpty()) {
+                    Toast.makeText(
+                        requireContext(),
+                        "No such fabric code",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    enterFabricCodeBinding.pbFabricSearching.visibility = View.GONE
+                    enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.VISIBLE
+                } else {
+                    Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(
+                        EnterFabricCodeFragmentDirections.actionEnterFabricCodeFragmentToListFabricFragment(
+                            fabricCode,
+                            args.viewType
+                        )
+                    )
+                }
+            }
+        } else {
+            lifecycleScope.launch(Dispatchers.Main) {
+                Toast.makeText(requireContext(), "Error occurred!", Toast.LENGTH_SHORT).show()
+                enterFabricCodeBinding.pbFabricSearching.visibility = View.GONE
+                enterFabricCodeBinding.btnSubmitFabricCode.visibility = View.VISIBLE
+            }
+        }
+    }
 }

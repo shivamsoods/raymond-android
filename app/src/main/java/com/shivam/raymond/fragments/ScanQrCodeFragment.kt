@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.DecodeCallback
 import com.shivam.raymond.ScanQrEnum
 import com.shivam.raymond.databinding.FragmentScanQrCodeBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
@@ -33,7 +36,15 @@ class ScanQrCodeFragment : BaseFragment() {
         codeScanner = CodeScanner(requireActivity(), scanQrCodeBinding.qrScannerView)
         codeScanner.decodeCallback = DecodeCallback {
             activity?.runOnUiThread {
- checkForExistingFabricCode(it.text)
+
+                if (args.viewType == ScanQrEnum.API_FLOW) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        getFabricApiInfo(it.text)
+                    }
+                } else {
+
+                    checkForExistingFabricCode(it.text)
+                }
             }
         }
 
@@ -77,5 +88,22 @@ class ScanQrCodeFragment : BaseFragment() {
             .addOnFailureListener { Timber.d("Failed to fetch Fabric Code") }
 
     }
+
+    private suspend fun getFabricApiInfo(fabricCode: String) {
+        val fabricResponse = apiService.getFabricInfo(fabricCode)
+        if (fabricResponse.isSuccessful && fabricResponse.body() != null) {
+
+            lifecycleScope.launch(Dispatchers.Main) {
+                if (fabricResponse.body()!!.isEmpty()) {
+                    Toast.makeText(requireContext(), "No such fabric code", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Found fabric code", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(ScanQrCodeFragmentDirections.actionScanQrCodeFragmentToListFabricFragment(fabricCode, args.viewType))
+                }
+            }
+        }
+
+    }
+
 
 }

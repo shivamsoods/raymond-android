@@ -17,6 +17,13 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFetchAPI"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fetch API"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGotoQrCodeScanning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,7 +1,14 @@
 buildscript {
+
+    ext {
+        koin_version = '2.2.3'
+        moshi_version = "1.13.0"
+        retrofit_version = "2.9.0"
+    }
+
     dependencies {
         classpath 'com.google.gms:google-services:4.3.10'
-        classpath'androidx.navigation:navigation-safe-args-gradle-plugin:2.4.1'
+        classpath'androidx.navigation:navigation-safe-args-gradle-plugin:2.4.2'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
 
     }

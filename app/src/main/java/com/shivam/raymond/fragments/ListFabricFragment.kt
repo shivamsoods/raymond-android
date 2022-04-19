@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +13,9 @@ import com.shivam.raymond.adapters.FabricDetailsListAdapter
 import com.shivam.raymond.adapters.FabricItemClickListener
 import com.shivam.raymond.databinding.FragmentListFabricBinding
 import com.shivam.raymond.models.FabricInfoModel
+import com.shivam.raymond.models.FabricInfoParcelable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
@@ -33,7 +37,15 @@ class ListFabricFragment : BaseFragment(), FabricItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        getFabricList(args.fabricCode)
+        if(args.viewType==ScanQrEnum.API_FLOW){
+            lifecycleScope.launch(Dispatchers.IO) {
+                getFabricApiInfo(args.fabricCode)
+            }
+        }else{
+
+            getFabricList(args.fabricCode)
+        }
+
 
     }
 
@@ -80,12 +92,12 @@ class ListFabricFragment : BaseFragment(), FabricItemClickListener {
     override fun onFabricItemClick(itemPosition: Int) {
         super.onFabricItemClick(itemPosition)
         val docId = fabricDetailList[itemPosition].documentId!!
-        val fabricCode= fabricDetailList[itemPosition].fabricCode
+        val fabricCode = fabricDetailList[itemPosition].fabricCode
 
         when (args.viewType) {
             ScanQrEnum.ADD_IMAGE -> {
 
-                val docIds=ArrayList<String>()
+                val docIds = ArrayList<String>()
                 fabricDetailList.forEach {
                     docIds.add(it.documentId!!)
                 }
@@ -93,7 +105,7 @@ class ListFabricFragment : BaseFragment(), FabricItemClickListener {
 
                 findNavController().navigate(
                     ListFabricFragmentDirections.actionListFabricFragmentToEnterFabricImageFragment(
-                       docIds.toTypedArray(), args.fabricCode
+                        docIds.toTypedArray(), args.fabricCode
                     )
                 )
 
@@ -105,7 +117,6 @@ class ListFabricFragment : BaseFragment(), FabricItemClickListener {
                     )
                 )
             }
-
             ScanQrEnum.QR_CODE_FLOW -> {
                 findNavController().navigate(
                     ListFabricFragmentDirections.actionListFabricFragmentToDisplayRackNumberFragment(
@@ -113,6 +124,64 @@ class ListFabricFragment : BaseFragment(), FabricItemClickListener {
                     )
                 )
             }
+            ScanQrEnum.API_FLOW -> {
+                val fabricItem=fabricDetailList[itemPosition]
+
+                val payload = FabricInfoParcelable(
+                    fabricCode = fabricItem.fabricCode,
+                    imageUrl = fabricItem.imageUrl,
+                    rackNumber = fabricItem.rackNumber,
+                    batch = fabricItem.batch,
+                    fileNumber = fabricItem.fileNumber,
+                    quantity = fabricItem.quantity
+                )
+
+                findNavController().navigate(
+                    ListFabricFragmentDirections.actionListFabricFragmentToApiFragment(payload)
+                )
+            }
         }
+    }
+
+    override fun onFabricImageClick(itemPosition: Int) {
+        super.onFabricImageClick(itemPosition)
+
+        findNavController().navigate(
+            ListFabricFragmentDirections.actionListFabricFragmentToFullScreenImageFragment(
+                fabricDetailList[itemPosition].imageUrl!!
+            )
+        )
+    }
+
+    private suspend fun getFabricApiInfo(fabricCode: String) {
+        fabricDetailList.clear()
+
+        val fabricResponse = apiService.getFabricInfo(fabricCode)
+        if (fabricResponse.isSuccessful && fabricResponse.body() != null) {
+
+            lifecycleScope.launch(Dispatchers.Main) {
+                if (fabricResponse.body()!!.isNotEmpty()) {
+                    fabricResponse.body()!!.forEach {document->
+                        val payload = FabricInfoModel(
+                            fabricCode = document.fabricCode,
+                            fabricLength = "",
+                            fabricWidth = "",
+                            imageUrl = document.imageUrl,
+                            rackNumber = document.rackNo,
+                            batch = document.batch,
+                            fileNumber = document.fileNo,
+                            documentId = "",
+                            quantity = document.quantity
+                        )
+
+                        fabricDetailList.add(payload)
+                    }
+
+                    setUpRecyclerView(fabricDetailList)
+
+                }
+            }
+        }
+
     }
 }

@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.shivam.raymond.api.ApiService
+import org.koin.android.ext.android.inject
 
 open class BaseFragment : Fragment() {
 
@@ -16,5 +18,8 @@ open class BaseFragment : Fragment() {
         val result = ActivityCompat.checkSelfPermission(requireContext(), permission)
         return result == PackageManager.PERMISSION_GRANTED
     }
+
+    val apiService: ApiService by inject()
+
 
 }

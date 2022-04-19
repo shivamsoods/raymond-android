@@ -103,6 +103,13 @@
             android:id="@+id/action_listFabricFragment_to_displayRackNumberFragment"
             app:destination="@id/displayRackNumberFragment"
             app:popUpTo="@id/listFabricFragment" />
+        <action
+            android:id="@+id/action_listFabricFragment_to_apiFragment"
+            app:destination="@id/apiFragment"
+            app:popUpTo="@id/listFabricFragment" />
+        <action
+            android:id="@+id/action_listFabricFragment_to_fullScreenImageFragment"
+            app:destination="@id/fullScreenImageFragment" />
     </fragment>
     <fragment
         tools:layout="@layout/fragment_display_rack_number"
@@ -149,5 +156,16 @@
         <argument
             android:name="imageUri"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/apiFragment"
+        android:name="com.shivam.raymond.fragments.ApiFragment"
+        android:label="Fabric Detail"
+        tools:layout="@layout/fragment_api" >
+        <argument android:name="payload"
+            app:argType="com.shivam.raymond.models.FabricInfoParcelable" />
+        <action
+            android:id="@+id/action_apiFragment_to_fullScreenImageFragment"
+            app:destination="@id/fullScreenImageFragment" />
     </fragment>
 </navigation>
